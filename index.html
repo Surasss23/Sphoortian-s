@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spoortians</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Spoortians</h1>
+
+        <div class="notice-board">
+            <p class="notice-title">Notice Board</p>
+            <p id="notice-text" class="notice-text">Loading...</p>
+        </div>
+
+        <div class="content-box" id="content-box">
+            <p>Loading content...</p>
+        </div>
+    </div>
+
+    <script>
+        const sheetID = "1ms6uBKR_OsQxW3bJTMIdPxRTQdUq1PrXtdbgJuGXLUY"; // Google Sheet ID
+        const sheetURL = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&tq=`;
+
+        fetch(sheetURL)
+            .then(res => res.text())
+            .then(data => {
+                const jsonData = JSON.parse(data.substring(47, data.length - 2)); // Parse Google Sheets JSON
+                const rows = jsonData.table.rows;
+                
+                // Notice Board Update
+                document.getElementById("notice-text").innerHTML = rows[0].c[0]?.v || "No Notice Available";
+
+                // Content Update
+                let contentHTML = "";
+                for (let i = 1; i < rows.length; i++) { // Skip first row (used for Notice)
+                    const title = rows[i].c[0]?.v || "No Title";
+                    const link = rows[i].c[1]?.v || "#";
+
+                    contentHTML += `
+                        <div class="item">
+                            <div class="text-box">
+                                <p>${title}</p>
+                            </div>
+                            <a href="${link}" class="go-button">Go</a>
+                        </div>
+                    `;
+                }
+                document.getElementById("content-box").innerHTML = contentHTML;
+            })
+            .catch(error => console.error("Error loading data:", error));
+    </script>
+</body>
+</html>
