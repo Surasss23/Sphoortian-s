@@ -30,28 +30,35 @@
             .then(data => {
                 const jsonData = JSON.parse(data.substring(47, data.length - 2)); // Parse Google Sheets JSON
                 const rows = jsonData.table.rows;
-                
-                // Notice Board Update
-                document.getElementById("notice-text").innerHTML = rows[0].c[0]?.v || "No Notice Available";
+
+                // Check if there is at least one row for notice
+                if (rows.length > 0) {
+                    const notice = rows[0].c[1]?.v || "No Notice Available"; // 2nd column for Notice
+                    document.getElementById("notice-text").innerHTML = notice;
+                }
 
                 // Content Update
                 let contentHTML = "";
-                for (let i = 1; i < rows.length; i++) { // Skip first row (used for Notice)
-                    const title = rows[i].c[0]?.v || "No Title";
-                    const link = rows[i].c[1]?.v || "#";
+                for (let i = 1; i < rows.length; i++) { // Start from row 2 (index 1)
+                    const title = rows[i].c[0]?.v || "No Title"; // 1st column for Title
+                    const link = rows[i].c[1]?.v || "#"; // 2nd column for Link
 
                     contentHTML += `
                         <div class="item">
                             <div class="text-box">
                                 <p>${title}</p>
                             </div>
-                            <a href="${link}" class="go-button">Go</a>
+                            <a href="${link}" target="_blank" class="go-button">Go</a>
                         </div>
                     `;
                 }
-                document.getElementById("content-box").innerHTML = contentHTML;
+                document.getElementById("content-box").innerHTML = contentHTML || "<p>No content available</p>";
             })
-            .catch(error => console.error("Error loading data:", error));
+            .catch(error => {
+                console.error("Error loading data:", error);
+                document.getElementById("notice-text").innerHTML = "Error loading notice";
+                document.getElementById("content-box").innerHTML = "<p>Error loading content</p>";
+            });
     </script>
 </body>
 </html>
