@@ -11,11 +11,13 @@
     <div class="container">
         <h1 class="title">Spoortians</h1>
 
+        <!-- Notice Board -->
         <div class="notice-board">
             <p class="notice-title">Notice Board</p>
             <p id="notice-text" class="notice-text">Loading...</p>
         </div>
 
+        <!-- Content Box -->
         <div class="content-box" id="content-box">
             <p>Loading content...</p>
         </div>
@@ -31,17 +33,17 @@
                 const jsonData = JSON.parse(data.substring(47, data.length - 2)); // Parse Google Sheets JSON
                 const rows = jsonData.table.rows;
 
-                // Check if there is at least one row for notice
+                // ✅ Fix: Notice Board me sirf Notice (2nd Column ka data)
                 if (rows.length > 0) {
-                    const notice = rows[0].c[1]?.v || "No Notice Available"; // 2nd column for Notice
+                    const notice = rows[0].c[1]?.v || "No Notice Available"; // Notice Board Content (Column 2)
                     document.getElementById("notice-text").innerHTML = notice;
                 }
 
-                // Content Update
+                // ✅ Fix: Content Box me Title (Column 1) & Go Button me Link (Column 2)
                 let contentHTML = "";
-                for (let i = 1; i < rows.length; i++) { // Start from row 2 (index 1)
-                    const title = rows[i].c[0]?.v || "No Title"; // 1st column for Title
-                    const link = rows[i].c[1]?.v || "#"; // 2nd column for Link
+                for (let i = 1; i < rows.length; i++) { // Row 2 se start hoga (kyunki row 1 notice ke liye hai)
+                    const title = rows[i].c[0]?.v || "No Title"; // Title (Column 1)
+                    const link = rows[i].c[1]?.v || "#"; // Link (Column 2)
 
                     contentHTML += `
                         <div class="item">
@@ -52,6 +54,8 @@
                         </div>
                     `;
                 }
+                
+                // ✅ Agar koi content nahi toh fallback message
                 document.getElementById("content-box").innerHTML = contentHTML || "<p>No content available</p>";
             })
             .catch(error => {
