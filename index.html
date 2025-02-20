@@ -11,13 +11,13 @@
     <div class="container">
         <h1 class="title">Spoortians</h1>
 
-        <!-- Notice Board -->
+        <!-- ✅ Notice Board (Green Box) -->
         <div class="notice-board">
             <p class="notice-title">Notice Board</p>
             <p id="notice-text" class="notice-text">Loading...</p>
         </div>
 
-        <!-- Content Box -->
+        <!-- ✅ Content Box (White Box) -->
         <div class="content-box" id="content-box">
             <p>Loading content...</p>
         </div>
@@ -33,17 +33,17 @@
                 const jsonData = JSON.parse(data.substring(47, data.length - 2)); // Parse Google Sheets JSON
                 const rows = jsonData.table.rows;
 
-                // ✅ Fix: Notice Board me sirf Notice (2nd Column ka data)
+                // ✅ Notice Board Fix (Green Box) -> Column 1, First Row
                 if (rows.length > 0) {
-                    const notice = rows[0].c[1]?.v || "No Notice Available"; // Notice Board Content (Column 2)
+                    const notice = rows[0].c[0]?.v || "No Notice Available"; // Column 1 (Notice)
                     document.getElementById("notice-text").innerHTML = notice;
                 }
 
-                // ✅ Fix: Content Box me Title (Column 1) & Go Button me Link (Column 2)
+                // ✅ Title & Link Fix (White Box + Go Button)
                 let contentHTML = "";
-                for (let i = 1; i < rows.length; i++) { // Row 2 se start hoga (kyunki row 1 notice ke liye hai)
-                    const title = rows[i].c[0]?.v || "No Title"; // Title (Column 1)
-                    const link = rows[i].c[1]?.v || "#"; // Link (Column 2)
+                for (let i = 1; i < rows.length; i++) { // Start from Row 2 (Title + Link)
+                    const title = rows[i].c[1]?.v || "No Title"; // Column 2 (Title)
+                    const link = rows[i].c[2]?.v || "#"; // Column 3 (Link)
 
                     contentHTML += `
                         <div class="item">
@@ -55,7 +55,7 @@
                     `;
                 }
                 
-                // ✅ Agar koi content nahi toh fallback message
+                // ✅ If No Data Found, Show Fallback Message
                 document.getElementById("content-box").innerHTML = contentHTML || "<p>No content available</p>";
             })
             .catch(error => {
